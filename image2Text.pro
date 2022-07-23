@@ -2,7 +2,6 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++11
 
 CONFIG += c++17
 INCLUDEPATH += F:/openCV/opencv/build/include
@@ -26,6 +25,7 @@ SOURCES += \
     image2ASCIIConverter.cpp \
     main.cpp \
     mainwindow.cpp \
+    threadpool.cpp \
     webcamhandler.cpp
 
 HEADERS += \
@@ -33,6 +33,7 @@ HEADERS += \
     converter.h \
     image2ASCIIConverter.h \
     mainwindow.h \
+    threadpool.h \
     webcamhandler.h
 
 FORMS += \

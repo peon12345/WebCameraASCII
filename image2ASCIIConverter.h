@@ -13,6 +13,8 @@ public:
   Image2ASCIIConverter();
   QStringList convert(const cv::Mat mat) const override;
 private:
+  QString convertMatRow(const cv::Mat mat,int rowInd) const;
+private:
   CharacterDictionary m_dict;
 };
 
