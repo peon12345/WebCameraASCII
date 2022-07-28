@@ -9,6 +9,9 @@ class WebcamHandler : public QObject
 {
   Q_OBJECT
 public:
+  bool open();
+  void close();
+  bool isOpened();
   WebcamHandler();
   cv::Mat getFrame();
 

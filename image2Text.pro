@@ -25,19 +25,25 @@ SOURCES += \
     image2ASCIIConverter.cpp \
     main.cpp \
     mainwindow.cpp \
-    threadpool.cpp \
+    matrixeffect.cpp \
+    settingsform.cpp \
+    texteffect.cpp \
     webcamhandler.cpp
 
 HEADERS += \
+    Effects.h \
     characterdictionary.h \
     converter.h \
     image2ASCIIConverter.h \
     mainwindow.h \
-    threadpool.h \
+    matrixeffect.h \
+    settingsform.h \
+    texteffect.h \
     webcamhandler.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    settingsform.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

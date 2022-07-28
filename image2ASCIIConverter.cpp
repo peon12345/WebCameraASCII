@@ -1,6 +1,6 @@
 #include "image2ASCIIConverter.h"
 #include <QDebug>
-
+#include <QElapsedTimer>
 
 Image2ASCIIConverter::Image2ASCIIConverter()
 {
@@ -14,32 +14,34 @@ QStringList Image2ASCIIConverter::convert(const cv::Mat mat) const
   cv::Mat matResized;
   cv::resize(mat,matResized,m_size);
 
-
   cv::Mat matGray;
   cv::cvtColor(matResized,matGray, cv::COLOR_BGR2GRAY);
 
   QStringList list;
 
+  QString line;
+
   for(int i = 0; i < matGray.rows; ++i){
 
-      list.append(convertMatRow(matGray,i));
+      line.clear();
+
+      for( int j = 0; j < matGray.cols; ++j){
+
+          line += m_dict.getChar(matGray.at<uchar>(i,j));
+        }
+
+
+      list.append(line);
     }
 
   return list;
 }
 
-QString Image2ASCIIConverter::convertMatRow(cv::Mat mat,int rowInd) const
+void Image2ASCIIConverter::setASCIIGradient(const QString &gradient)
 {
-
- QString line;
-
-  for( int j = 0; j < mat.cols; ++j){
-
-      line += m_dict.getChar(mat.at<uchar>(rowInd,j));
-    }
-
-  return line;
+  m_dict.setASCIIGradient(gradient);
 }
+
 
 
 

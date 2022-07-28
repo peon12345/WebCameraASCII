@@ -6,6 +6,8 @@
 #include "webcamhandler.h"
 #include <QTimer>
 #include <memory>
+#include <settingsform.h>
+#include "texteffect.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,29 +21,26 @@ public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
-
-
 private slots:
-   void showSym(const QStringList& list);
-
   void on_openFileButton_clicked();
-
-  void on_startButton_clicked();
-
   void on_cameraButton_clicked();
+  void on_settingsButton_clicked();
 
 private:
- const std::unique_ptr<ImageConverter> m_converter;
+  std::unique_ptr<ImageConverter> m_converter;
+  std::unique_ptr<TextEffect> m_effect;
   WebcamHandler m_webCamHandler;
   QTimer m_timerWeb;
   Ui::MainWindow *ui;
   QFont m_font;
 
-
-  // QWidget interface
 protected:
   void resizeEvent(QResizeEvent *event) override;
 private:
+  SettingsForm m_settingsForm;
   QSize calculateSizeSym();
+  void setASCIIGradient();
+  void connectSettings();
+  void showSym(QStringList &&list);
 };
 #endif // MAINWINDOW_H

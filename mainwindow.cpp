@@ -7,25 +7,34 @@
 #include <QFont>
 #include <QDebug>
 #include <QResizeEvent>
+#include <QElapsedTimer>
+#include <QScrollBar>
+#include "Effects.h"
 
 
 MainWindow::MainWindow(QWidget *parent)
-  : QMainWindow(parent)
-  , m_converter(new Image2ASCIIConverter()) , ui(new Ui::MainWindow),m_font("Lucida Console", 12)
+  : QMainWindow(parent) ,
+    ui(new Ui::MainWindow),m_font("Lucida Console", 10) , m_settingsForm (this)
 {
+
+  m_converter = std::make_unique<Image2ASCIIConverter>();
+
   ui->setupUi(this);
-  ui->textEdit->setLineWrapMode(QTextEdit::NoWrap);
-  ui->textEdit->setStyleSheet("QTextEdit { background-color: rgb(0, 0, 0); }");
-  ui->textEdit->setTextColor(QColor(255,255,255));
+  ui->plainTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+  ui->plainTextEdit->setStyleSheet("color: green; background-color: black;");
 
+  ui->plainTextEdit->setFont(m_font);
 
-  ui->textEdit->setFont(m_font);
+  ui->lineEditGradient->setText(" *?&!%+@YBSTM");
 
   connect(&m_timerWeb,&QTimer::timeout,this,[this]() {
-   cv::Mat mat = m_webCamHandler.getFrame();
-   showSym( m_converter->convert(mat) );
+
+      cv::Mat mat = m_webCamHandler.getFrame();
+      showSym( m_converter->convert(mat) );
     });
 
+
+  m_effect = std::make_unique<MatrixEffect>("white");
 
 }
 
@@ -34,14 +43,24 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
-void MainWindow::showSym(const QStringList &list)
+
+void MainWindow::showSym( QStringList&& list)
 {
 
-  ui->textEdit->clear();
+  //if(m_effect){
 
-  for(const QString &str : list){
-      ui->textEdit->append(str);
-    }
+     // m_effect->applyEffect(*ui->plainTextEdit,list);
+
+
+//    }else{
+
+
+      ui->plainTextEdit->clear();
+
+     for( QString &str : list){
+         str.replace(" " , "&nbsp;");
+         ui->plainTextEdit->appendHtml(str);
+       }
 
 }
 
@@ -51,30 +70,45 @@ void MainWindow::on_openFileButton_clicked()
   QString pathImage = QFileDialog::getOpenFileName(0, "Open Dialog", "", "*.jpg *.png");
 
   if(!pathImage.isEmpty()){
-      ui->lineEditPath->setText(pathImage);
+      QImage img(pathImage);
+
+      if(!img.isNull()){
+
+          if(ui->comboBoxConvert->currentText() == "ASCII"){
+              setASCIIGradient();
+            }
+
+          QStringList list = m_converter->convert(img);
+          showSym(std::move(list));
+        }else{
+          ui->plainTextEdit->setPlainText("Read error");
+        }
     }
 }
-
-
-void MainWindow::on_startButton_clicked()
-{
-
-  QImage img(ui->lineEditPath->text());
-
-  if(!img.isNull()){
-      QStringList list = m_converter->convert(img);
-      showSym(list);
-    }else{
-      ui->textEdit->setText("Read error");
-    }
-}
-
 
 
 void MainWindow::on_cameraButton_clicked()
 {
-  m_converter->resize(calculateSizeSym());
-  m_timerWeb.start(50);
+  if(m_timerWeb.isActive()){
+      m_webCamHandler.close();
+      m_timerWeb.stop();
+      ui->openFileButton->show();
+      ui->cameraButton->setText("Start camera");
+
+    }else{
+
+
+      if(ui->comboBoxConvert->currentText() == "ASCII"){
+          setASCIIGradient();
+        }
+
+      m_webCamHandler.open();
+      m_converter->resize(calculateSizeSym());
+      m_timerWeb.start(20);
+      ui->openFileButton->hide();
+      ui->cameraButton->setText("Stop");
+    }
+
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -86,18 +120,67 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 
 QSize MainWindow::calculateSizeSym()
 {
- QFontMetrics metrics(m_font);
- int width = metrics.maxWidth() + metrics.maxWidth()/10;
- int height = metrics.height() + metrics.height()/10;
+  QFontMetrics metrics(m_font);
+  int width = metrics.maxWidth() + metrics.maxWidth()/10;
+  int height = metrics.height() + metrics.height()/10;
 
-  return QSize(ui->textEdit->width()/width,ui->textEdit->height()/height);
+  return QSize(ui->plainTextEdit->width()/width,ui->plainTextEdit->height()/height);
+}
+
+void MainWindow::setASCIIGradient()
+{
+  auto ptr = m_converter.get();
+  static_cast<Image2ASCIIConverter*>(ptr)->setASCIIGradient(ui->lineEditGradient->text());
+}
+
+void MainWindow::connectSettings()
+{
+  connect(&m_settingsForm,&SettingsForm::effectEnabled,[&settingsForm = m_settingsForm,&effect  =  m_effect](Effects e) {
+
+      switch (e) {
+
+        case Effects::MATRIX: {
+            effect = std::make_unique<MatrixEffect>(std::get<1>(settingsForm.matrixEffectSettings()));
+          }
+
+        default:
+          effect = std::make_unique<MatrixEffect>(std::get<1>(settingsForm.matrixEffectSettings()));
+        }
+
+    });
+
+
+  connect(&m_settingsForm,&SettingsForm::colorChanged,[&effect  =  m_effect](Effects e, const QString& colorTag) {
+
+      switch (e) {
+
+        case Effects::MATRIX: {
+            MatrixEffect* matEffect = dynamic_cast<MatrixEffect*>(effect.get());
+
+            if(matEffect){
+                matEffect->setColorTag(colorTag);
+              }
+          }
+
+
+        default:
+          MatrixEffect* matEffect = dynamic_cast<MatrixEffect*>(effect.get());
+
+          if(matEffect){
+              matEffect->setColorTag(colorTag);
+            }
+        }
+    });
+
+
+
+
 }
 
 
 
-
-
-
-
-
+void MainWindow::on_settingsButton_clicked()
+{
+  m_settingsForm.show();
+}
 

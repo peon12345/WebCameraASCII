@@ -1,28 +1,57 @@
 #include "characterdictionary.h"
 
+//"$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/|()1{}[]?-_+~<>i!lI;:,^`'. ";
+//" *?&!%+@YBSTM";
+
+
 CharacterDictionary::CharacterDictionary()
 {
-  fillDict();
+
 }
 
 QChar CharacterDictionary::getChar(uint8_t grayScale) const
 {
-  return m_dict.lower_bound(grayScale)->second;
+  return m_dict[grayScale];
+}
+
+void CharacterDictionary::setASCIIGradient(const QString &gradientStr)
+{
+  m_gradientASCII = gradientStr;
+  fillDict();
 }
 
 void CharacterDictionary::fillDict()
 {
-  m_dict.insert({20,' '});
-  m_dict.insert({40,'*'});
-  m_dict.insert({60,'?'});
-  m_dict.insert({80,'&'});
-  m_dict.insert({100,'!'});
-  m_dict.insert({120,'%'});
-  m_dict.insert({140,'+'});
-  m_dict.insert({160,'@'});
-  m_dict.insert({180,'Y'});
-  m_dict.insert({200,'B'});
-  m_dict.insert({220,'S'});
-  m_dict.insert({240,'T'});
-  m_dict.insert({255,'M'});
+  float interval = (float)GRAY_SCALE /  (float)m_gradientASCII.length();
+
+  int intervalInt = interval;
+  float intervalEnd = interval - intervalInt;
+  float currentEnd = 0.0;
+  int index = 0;
+  int indexASCII = 0;
+
+  for(float i = 0; i < GRAY_SCALE; i += interval ){
+
+      currentEnd += intervalEnd;
+
+      if(currentEnd >= 1 ){
+        m_dict[index] = m_gradientASCII.at(indexASCII);
+        index++;
+        currentEnd -= 1;
+        }
+
+      for(int g = 0; g< intervalInt; ++g){
+        m_dict[index] = m_gradientASCII.at(indexASCII);
+        index++;
+        }
+      indexASCII++;
+    }
+
+
 }
+
+
+
+
+
+

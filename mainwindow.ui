@@ -20,9 +20,18 @@
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QLineEdit" name="lineEditPath">
+         <widget class="QComboBox" name="comboBoxConvert">
+          <item>
+           <property name="text">
+            <string>ASCII</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEditGradient">
           <property name="placeholderText">
-           <string>path</string>
+           <string>ASCII</string>
           </property>
          </widget>
         </item>
@@ -34,13 +43,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="startButton">
-          <property name="text">
-           <string>Convert</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="cameraButton">
           <property name="text">
            <string>Start camera</string>
@@ -48,7 +50,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QTextEdit" name="textEdit"/>
+         <widget class="QPushButton" name="settingsButton">
+          <property name="text">
+           <string>Settings</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPlainTextEdit" name="plainTextEdit"/>
         </item>
        </layout>
       </item>

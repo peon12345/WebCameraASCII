@@ -3,7 +3,22 @@
 #include <thread>
 #include <QDebug>
 
-WebcamHandler::WebcamHandler() : m_cap(0)
+bool WebcamHandler::open()
+{
+  return m_cap.open(0);
+}
+
+void WebcamHandler::close()
+{
+ m_cap.release();
+}
+
+bool WebcamHandler::isOpened()
+{
+  return m_cap.isOpened();
+}
+
+WebcamHandler::WebcamHandler()
 {
 
 }

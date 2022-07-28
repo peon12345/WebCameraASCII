@@ -12,6 +12,7 @@ class Image2ASCIIConverter final: public ImageConverter
 public:
   Image2ASCIIConverter();
   QStringList convert(const cv::Mat mat) const override;
+  void setASCIIGradient(const QString& gradient);
 private:
   QString convertMatRow(const cv::Mat mat,int rowInd) const;
 private:
