@@ -47,6 +47,9 @@ private:
   QFont m_font;
 private:
   void addMatLine(int block , int tailLength);
+
+  void insertHtml(QString& text , const QString& htmlLineBeg ,const QString& htmlLineEnd );
+  void replaceSpace(QString& line);
   void appendHtmlNoNL(QPlainTextEdit* textEdit,const QString &html);
   void appendPlainTextNoNL(QPlainTextEdit* textEdit , const QString& text);
 };
