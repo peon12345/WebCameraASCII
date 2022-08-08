@@ -49,7 +49,7 @@ void MainWindow::showSym( QStringList&& list)
 
   //if(m_effect){
 
-      m_effect->applyEffect(*ui->plainTextEdit,list);
+      m_effect->applyEffect(list);
 
 
 //    }else{

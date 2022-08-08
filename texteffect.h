@@ -8,7 +8,7 @@ class TextEffect
 public:
   TextEffect();
   virtual ~TextEffect() = default;
-  virtual void applyEffect( QWidget& widget , QStringList& list) = 0;
+  virtual void applyEffect(QStringList& list) = 0;
 
 };
 
